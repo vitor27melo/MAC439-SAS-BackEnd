@@ -2,12 +2,12 @@ package main
 
 import (
 	"backend/routes"
-	"net/http"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 func healthz(c echo.Context) error {
-	return c.String(http.StatusOK, "O pai ta on!")
+	return c.String(http.StatusOK, "O pai ta off!")
 }
 
 func main() {
@@ -15,4 +15,5 @@ func main() {
 	e.GET("/healthz", healthz)
 	e.GET("/courses", routes.GetCourses)
 	e.Start(":1323")
+
 }

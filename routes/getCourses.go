@@ -1,13 +1,13 @@
 package routes
 
 import (
+	"backend/assets"
 	"backend/configs"
 	"backend/model"
-	"backend/assets"
 	"database/sql"
+	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
-	"github.com/labstack/echo/v4"
 )
 
 func GetCourses(c echo.Context) error {
