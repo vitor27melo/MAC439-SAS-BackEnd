@@ -14,6 +14,6 @@ func main() {
 	e := echo.New()
 	e.GET("/healthz", healthz)
 	e.GET("/courses", routes.GetCourses)
+	e.GET("/days", routes.GetDays)
 	e.Start(":1323")
-
 }
