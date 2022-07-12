@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"backend/model"
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"net/http"
@@ -20,22 +20,29 @@ func GetDays(c echo.Context) error {
 
 	greeting, err := session.ReadTransaction(func(transaction neo4j.Transaction) (interface{}, error) {
 		result, err := transaction.Run(
-			"MATCH (n:Dia) RETURN n LIMIT 25",
+			"MATCH (n:Dia) RETURN n.data as data LIMIT 25",
 			map[string]interface{}{})
 		if err != nil {
 			return nil, err
 		}
 
-		if result.Next() {
-			fmt.Print("%s", result.Record().Values[0])
-			return result.Record().Values[0], nil
+		dias := []model.Dia{}
+
+		for result.Next() {
+			var dia model.Dia
+
+			if data, found := result.Record().Get("data"); found {
+				dia.Data = data.(string)
+			}
+
+			dias = append(dias, dia)
 		}
 
-		return nil, result.Err()
+		return dias, nil
 	})
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, greeting.Labels[0])
+	return c.JSON(http.StatusOK, greeting)
 }
