@@ -2,9 +2,11 @@ package routes
 
 import (
 	"backend/model"
+	"backend/tools"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-	"net/http"
 )
 
 func GetDays(c echo.Context) error {
@@ -22,27 +24,23 @@ func GetDays(c echo.Context) error {
 		result, err := transaction.Run(
 			"MATCH (n:Dia) RETURN n.data as data LIMIT 25",
 			map[string]interface{}{})
-		if err != nil {
-			return nil, err
-		}
+		tools.CheckError(err)
 
-		dias := []model.Dia{}
+		days := []model.Day{}
 
 		for result.Next() {
-			var dia model.Dia
+			var day model.Day
 
 			if data, found := result.Record().Get("data"); found {
-				dia.Data = data.(string)
+				day.Data = data.(string)
 			}
 
-			dias = append(dias, dia)
+			days = append(days, day)
 		}
 
-		return dias, nil
+		return days, nil
 	})
-	if err != nil {
-		return err
-	}
+	tools.CheckError(err)
 
 	return c.JSON(http.StatusOK, greeting)
 }

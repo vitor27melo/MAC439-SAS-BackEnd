@@ -1,13 +1,14 @@
 package routes
 
 import (
-	"backend/assets"
 	"backend/configs"
 	"backend/model"
+	"backend/tools"
 	"database/sql"
-	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 func GetCourses(c echo.Context) error {
@@ -23,10 +24,10 @@ func GetCourses(c echo.Context) error {
 	courses := []model.Course{}
 
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
-	assets.CheckError(err)
+	tools.CheckError(err)
 
 	rows, e := db.Query(stmt)
-	assets.CheckError(e)
+	tools.CheckError(e)
 
 	for rows.Next() {
 		var course model.Course
