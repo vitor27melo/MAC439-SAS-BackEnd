@@ -1,16 +1,16 @@
 package routes
 
 import (
+	"backend/configs"
 	"backend/model"
 	"backend/tools"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"net/http"
 )
 
 func GetDays(c echo.Context) error {
-	driver, err := neo4j.NewDriver("neo4j+s://3184388f.databases.neo4j.io:7687", neo4j.BasicAuth("neo4j", "ArbFLmo6VLVl1qHLUMzQalzXmOwBlsFqpyafiX7a218", ""))
+	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
 		panic(err)
 		return err

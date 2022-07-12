@@ -15,5 +15,6 @@ func main() {
 	e.GET("/healthz", healthz)
 	e.GET("/courses", routes.GetCourses)
 	e.GET("/days", routes.GetDays)
+	e.GET("/users", routes.GetUsers)
 	e.Start(":1323")
 }
