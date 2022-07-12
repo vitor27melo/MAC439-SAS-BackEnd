@@ -2,8 +2,9 @@ package main
 
 import (
 	"backend/routes"
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 func healthz(c echo.Context) error {
