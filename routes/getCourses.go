@@ -26,6 +26,8 @@ func GetCourses(c echo.Context) error {
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
 	tools.CheckError(err)
 
+	defer db.Close()
+
 	rows, e := db.Query(stmt)
 	tools.CheckError(e)
 
