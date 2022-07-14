@@ -28,8 +28,8 @@ func GetCourses(c echo.Context) error {
 
 	defer db.Close()
 
-	rows, e := db.Query(stmt)
-	tools.CheckError(e)
+	rows, err := db.Query(stmt)
+	tools.CheckError(err)
 
 	for rows.Next() {
 		var course model.Course
