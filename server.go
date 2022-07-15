@@ -16,7 +16,7 @@ var config = middleware.JWTConfig{
 }
 
 func healthz(c echo.Context) error {
-	return c.String(http.StatusOK, "O pai ta off!")
+	return c.String(http.StatusOK, "It's alive!!!\nhttps://www.youtube.com/watch?v=xos2MnVxe-c")
 }
 
 func main() {
