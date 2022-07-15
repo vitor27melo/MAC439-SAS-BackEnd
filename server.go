@@ -33,6 +33,8 @@ func main() {
 		userGroup.GET("/courses", routes.GetCourses)
 		userGroup.GET("/days", routes.GetDays)
 		userGroup.GET("/list", routes.GetUsers)
+		userGroup.POST("/upload-file", routes.UploadFile)
+		userGroup.GET("/download-file", routes.DownloadFile)
 	}
 
 	e.Start(":1323")

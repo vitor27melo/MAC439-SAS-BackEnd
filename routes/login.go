@@ -30,7 +30,6 @@ func Login(c echo.Context) (err error) {
 	if err = c.Bind(cred); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	tools.CheckError(err)
 
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
 	tools.CheckError(err)
