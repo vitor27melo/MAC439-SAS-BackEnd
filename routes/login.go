@@ -10,24 +10,26 @@ import (
 )
 
 type Credentials struct {
-	username string
-	password string
-	userId   string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	UserId   string
 }
 
-func Login(c echo.Context) error {
+func Login(c echo.Context) (err error) {
 	stmtQuery := `
 		SELECT
 			id_usuario
 		FROM
 			usuario
 		WHERE
-			cpf = ?
-			AND senha = ?;
+			cpf = $1
+			AND senha = $2;
 	`
 
-	cred := &Credentials{}
-	err := c.Bind(&cred)
+	cred := new(Credentials)
+	if err = c.Bind(cred); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 	tools.CheckError(err)
 
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
@@ -35,19 +37,11 @@ func Login(c echo.Context) error {
 
 	defer db.Close()
 
-	err = db.QueryRow(stmtQuery, cred.username, cred.password).Scan(&cred.userId)
+	err = db.QueryRow(stmtQuery, cred.Username, cred.Password).Scan(&cred.UserId)
 	tools.CheckError(err)
 
-	token, err := configs.CreateJWT(cred.userId)
+	token, err := configs.CreateJWT(cred.UserId)
 	tools.CheckError(err)
-
-	// stmtExec := `
-	// 	UPDATE usuario
-	// 	SET token = ?
-	// 	WHERE id_usuario = ?
-	// `
-
-	// db.Exec(stmtExec, token, cred.userId)
 
 	return c.JSON(http.StatusOK, map[string]string{"token": token})
 }

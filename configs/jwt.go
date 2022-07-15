@@ -23,7 +23,7 @@ func CreateJWT(userId string) (string, error) {
 	claims := &JWTCustomClaims{
 		UserId: userId,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Second * 10).Unix(),
+			ExpiresAt: time.Now().Add(time.Second * 10000).Unix(),
 		},
 	}
 

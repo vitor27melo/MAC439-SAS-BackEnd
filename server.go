@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/configs"
+	"backend/middlewares"
 	"backend/routes"
 	"net/http"
 
@@ -28,6 +29,7 @@ func main() {
 	userGroup := e.Group("/user")
 	{
 		userGroup.Use(middleware.JWTWithConfig(config))
+		userGroup.Use(middlewares.StoreUserId)
 		userGroup.GET("/courses", routes.GetCourses)
 		userGroup.GET("/days", routes.GetDays)
 		userGroup.GET("/list", routes.GetUsers)
