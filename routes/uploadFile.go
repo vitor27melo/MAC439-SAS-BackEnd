@@ -5,19 +5,20 @@ import (
 	"backend/tools"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"time"
-
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
+	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"time"
 )
 
 type Attachment struct {
-	AttachmentType   string            `json:"attachmentType"`
-	AdditionalFields map[string]string `json:"additionalFields"`
+	AttachmentType   string                `json:"attachmentType"`
+	AdditionalFields map[string]string     `json:"additionalFields"`
+	File             *multipart.FileHeader `json:"file"`
 }
 
 var stmtQuery = `
@@ -32,13 +33,13 @@ var stmtQuery = `
 func UploadFile(c echo.Context) error {
 	attachment := new(Attachment)
 	// TODO: Descobrir por que não está vindo os parâmetros na requisição
-	// if err := c.Bind(attachment); err != nil {
-	// 	return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	// }
-	attachment.AttachmentType = "exame"
-	attachment.AdditionalFields = map[string]string{"tipo": "Teste Overdose"}
+	if err := c.Bind(attachment); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	//attachment.AttachmentType = "exame"
+	//attachment.AdditionalFields = map[string]string{"tipo": "Teste Overdose"}
 
-	file, err := c.FormFile("file")
+	file, err := c.FormFile("File")
 	tools.CheckError(err)
 	filename := file.Filename
 	fileContent, err := file.Open()

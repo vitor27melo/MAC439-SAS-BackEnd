@@ -2,7 +2,6 @@ package routes
 
 import (
 	"backend/configs"
-	"backend/tools"
 	"database/sql"
 	"net/http"
 
@@ -27,20 +26,30 @@ func Login(c echo.Context) (err error) {
 	`
 
 	cred := new(Credentials)
-	if err = c.Bind(cred); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	cred.Username = c.FormValue("username")
+	cred.Password = c.FormValue("password")
+
+	if cred.Username == "" || cred.Password == "" {
+		return c.JSON(http.StatusNotFound, "Usuário ou senha não encontrados!")
+
 	}
 
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
-	tools.CheckError(err)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Erro na conexão com o banco de dados.")
+	}
 
 	defer db.Close()
 
 	err = db.QueryRow(stmtQuery, cred.Username, cred.Password).Scan(&cred.UserId)
-	tools.CheckError(err)
+
+	if err != nil {
+		return c.JSON(http.StatusNotFound, "Usuário ou senha não encontrados!")
+	}
 
 	token, err := configs.CreateJWT(cred.UserId)
-	tools.CheckError(err)
-
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Erro na criação do JWT.")
+	}
 	return c.JSON(http.StatusOK, map[string]string{"token": token})
 }
