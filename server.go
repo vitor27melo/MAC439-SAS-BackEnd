@@ -43,5 +43,5 @@ func main() {
 	if port == "" {
 		port = "1323"
 	}
-	e.Start(":" + "1323")
+	e.Start(":" + port)
 }
