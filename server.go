@@ -4,10 +4,10 @@ import (
 	"backend/configs"
 	"backend/middlewares"
 	"backend/routes"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
+	"os"
 )
 
 var config = middleware.JWTConfig{
@@ -37,6 +37,11 @@ func main() {
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file", routes.DownloadFile)
 	}
-
-	e.Start(":1323")
+	println("====>")
+	println(os.Getenv("PORT"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "1323"
+	}
+	e.Start(":" + "1323")
 }
