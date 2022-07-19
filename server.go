@@ -25,6 +25,7 @@ func main() {
 	e.Use(middleware.CORS())
 	e.GET("/healthz", healthz)
 	e.POST("/login", routes.Login)
+	e.POST("/register", routes.Register)
 
 	userGroup := e.Group("/user")
 	{

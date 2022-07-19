@@ -8,32 +8,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	UserId   string
-	Name     string
-	Cpf      string
-}
-
-func Login(c echo.Context) (err error) {
+func Register(c echo.Context) (err error) {
 	stmtQuery := `
-		SELECT
-			id_usuario,
-			nome
-		FROM
-			usuario
-		WHERE
-			(cpf = $1 OR email = $1)
-			AND senha = $2;
+		INSERT INTO
+		    usuario(nome, email, cpf, senha)
+		VALUES ($1, $2, $3, $4)
+
 	`
 
 	cred := new(Credentials)
 	cred.Username = c.FormValue("username")
 	cred.Password = c.FormValue("password")
+	cred.Cpf = c.FormValue("cpf")
+	cred.Name = c.FormValue("name")
 
 	if cred.Username == "" || cred.Password == "" {
-		return c.JSON(http.StatusNotFound, "Usuário ou senha não encontrados!")
+		return c.JSON(http.StatusBadRequest, "Informações insuficientes!")
 
 	}
 
@@ -44,10 +34,10 @@ func Login(c echo.Context) (err error) {
 
 	defer db.Close()
 
-	err = db.QueryRow(stmtQuery, cred.Username, cred.Password).Scan(&cred.UserId, &cred.Name)
+	_, err = db.Exec(stmtQuery, cred.Name, cred.Username, cred.Cpf, cred.Password)
 
 	if err != nil {
-		return c.JSON(http.StatusNotFound, "Usuário ou senha não encontrados!")
+		return c.JSON(http.StatusBadRequest, "Informações insuficientes ou inconsistentes!")
 	}
 
 	token, err := configs.CreateJWT(cred.UserId)
