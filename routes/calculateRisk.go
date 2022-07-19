@@ -7,7 +7,9 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
-func CalculateRisk(c echo.Context) error {
+func CalculateRisk(c echo.Context, id string) float64 {
+	riskLevel := 0.0
+
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
 		panic(err)
@@ -27,5 +29,6 @@ func CalculateRisk(c echo.Context) error {
 			cpf = $1
 			AND senha = $2; `
 	*/
-	return nil
+
+	return riskLevel
 }
