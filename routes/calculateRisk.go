@@ -23,12 +23,20 @@ func CalculateRisk(c echo.Context, name string) float64 {
 	session := driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 
-	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", nil))
+	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{}))
 	tools.CheckError(err)
+
 	for _, p := range directProbs {
-		n, err := strconv.ParseFloat(p)
+		if prob, found := p.Get("confiança"); found {
+			n, err := strconv.ParseFloat(prob.(string))
+			tools.CheckError(err)
+			if n-1 > riskLevel {
+				riskLevel = n - 1
+			}
+		}
 
 	}
+
 	//indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]<-(e2:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", nil))
 	//tools.CheckError(err)
 
@@ -52,16 +60,5 @@ func CalculateRisk(c echo.Context, name string) float64 {
 	*/
 
 	fmt.Print(c, name, err)
-	/*
-		stmtQuery := `
-		SELECT
-			id_usuario
-		FROM
-			usuario
-		WHERE
-			cpf = $1
-			AND senha = $2; `
-	*/
-
 	return riskLevel
 }
