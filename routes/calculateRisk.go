@@ -28,7 +28,7 @@ func CalculateRisk(c echo.Context, name string) float64 {
 
 	for _, p := range directProbs {
 		if prob, found := p.Get("confiança"); found {
-			n, err := strconv.ParseFloat(prob.(string))
+			n, err := strconv.ParseFloat(prob.(string), 64)
 			tools.CheckError(err)
 			if n-1 > riskLevel {
 				riskLevel = n - 1
