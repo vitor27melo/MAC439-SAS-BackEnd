@@ -4,7 +4,6 @@ import (
 	"backend/configs"
 	"backend/tools"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/labstack/echo/v4"
@@ -16,8 +15,9 @@ import (
 )
 
 type Attachment struct {
-	AttachmentType   string            `json:"attachmentType"`
-	AdditionalFields map[string]string `json:"additionalFields"`
+	AttachmentType string `json:"attachmentType"`
+	Date           string `json:"date"`
+	Observation    string `json:"obs"`
 }
 
 var stmtQuery = `
@@ -32,11 +32,8 @@ var stmtQuery = `
 func UploadFile(c echo.Context) error {
 	attachment := new(Attachment)
 	attachment.AttachmentType = c.FormValue("attachmentType")
-	aux := c.FormValue("additionalFields")
-	if err := json.Unmarshal([]byte(aux), &attachment.AdditionalFields); err != nil {
-		print(err)
-		return err
-	}
+	attachment.Date = c.FormValue("date")
+	attachment.Observation = c.FormValue("obs")
 	file, err := c.FormFile("file")
 
 	tools.CheckError(err)
@@ -76,7 +73,7 @@ func UploadFile(c echo.Context) error {
 	tools.CheckError(err)
 
 	coll := client.Database("test").Collection("usuario")
-	doc := prepareDoc(attachmentName, fileType, attachment.AttachmentType, cpf, attachment.AdditionalFields)
+	doc := prepareDoc(attachmentName, fileType, attachment.AttachmentType, cpf, attachment.Date, attachment.Observation)
 	result, err := coll.InsertOne(ctx, doc)
 	tools.CheckError(err)
 	fmt.Println(result)
@@ -85,12 +82,11 @@ func UploadFile(c echo.Context) error {
 
 }
 
-func prepareDoc(attachmentName string, fileType string, attachmentType string, cpf string, additionalFields map[string]string) bson.D {
-	if attachmentType == "exame" {
+func prepareDoc(attachmentName string, fileType string, attachmentType string, cpf string, date string, obs string) bson.D {
+	if attachmentType == "Exame" {
 		attachment := bson.D{{"tipo", fileType}, {"conteudo", attachmentName}}
-		exam := bson.D{{"tipo", additionalFields["tipo"]}, {"anexo", attachment}}
+		exam := bson.D{{"obs", obs}, {"anexo", attachment}}
 		doc := bson.D{{"cpf", cpf}, {"exame", exam}}
-
 		return doc
 	}
 
