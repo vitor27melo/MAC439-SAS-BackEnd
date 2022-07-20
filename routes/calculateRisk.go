@@ -11,8 +11,9 @@ import (
 	"strconv"
 )
 
-func CalculateRisk(c echo.Context, name string) float64 {
+func CalculateRisk(c echo.Context) float64 {
 	riskLevel := 0.0
+	name := c.FormValue("name")
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
