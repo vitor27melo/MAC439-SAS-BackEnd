@@ -83,12 +83,8 @@ func UploadFile(c echo.Context) error {
 }
 
 func prepareDoc(attachmentName string, fileType string, attachmentType string, cpf string, date string, obs string) bson.D {
-	if attachmentType == "Exame" {
-		attachment := bson.D{{"tipo", fileType}, {"conteudo", attachmentName}}
-		exam := bson.D{{"obs", obs}, {"anexo", attachment}}
-		doc := bson.D{{"cpf", cpf}, {"exame", exam}}
-		return doc
-	}
-
-	panic("Invalid attachment type")
+	attachment := bson.D{{"tipo", fileType}, {"conteudo", attachmentName}}
+	exam := bson.D{{"obs", obs}, {"anexo", attachment}}
+	doc := bson.D{{"cpf", cpf}, {"exame", exam}}
+	return doc
 }

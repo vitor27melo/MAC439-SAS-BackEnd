@@ -20,7 +20,8 @@ func Login(c echo.Context) (err error) {
 	stmtQuery := `
 		SELECT
 			id_usuario,
-			nome
+			nome,
+			cpf
 		FROM
 			usuario
 		WHERE
@@ -44,7 +45,7 @@ func Login(c echo.Context) (err error) {
 
 	defer db.Close()
 
-	err = db.QueryRow(stmtQuery, cred.Username, cred.Password).Scan(&cred.UserId, &cred.Name)
+	err = db.QueryRow(stmtQuery, cred.Username, cred.Password).Scan(&cred.UserId, &cred.Name, &cred.Cpf)
 
 	if err != nil {
 		return c.JSON(http.StatusNotFound, "Usuário ou senha não encontrados!")
@@ -54,5 +55,5 @@ func Login(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Erro na criação do JWT.")
 	}
-	return c.JSON(http.StatusOK, map[string]string{"token": token, "nome": cred.Name})
+	return c.JSON(http.StatusOK, map[string]string{"token": token, "nome": cred.Name, "cpf": cred.Cpf})
 }

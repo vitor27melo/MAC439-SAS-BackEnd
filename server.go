@@ -34,8 +34,9 @@ func main() {
 		userGroup.GET("/courses", routes.GetCourses)
 		userGroup.GET("/days", routes.GetDays)
 		userGroup.GET("/list", routes.GetUsers)
+		userGroup.GET("/files-list", routes.GetUserFiles)
 		userGroup.POST("/upload-file", routes.UploadFile)
-		userGroup.GET("/download-file", routes.DownloadFile)
+		userGroup.GET("/download-file/:name", routes.DownloadFile)
 		userGroup.GET("/risk", routes.CalculateRisk)
 	}
 	port := os.Getenv("PORT")

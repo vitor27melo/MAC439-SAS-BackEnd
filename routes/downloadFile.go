@@ -8,9 +8,15 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"io/ioutil"
+	"strings"
 )
 
 func DownloadFile(c echo.Context) error {
+
+	url := c.Request().RequestURI
+	url_list := strings.Split(url, "/")
+	filename := url_list[len(url_list)-1]
+
 	client, ctx := configs.GetMongoClient()
 	defer client.Disconnect(ctx)
 
@@ -19,7 +25,6 @@ func DownloadFile(c echo.Context) error {
 		db,
 	)
 	var buf bytes.Buffer
-	filename := "20220720190345OBRIGADO ÁTILA.jpg"
 	dStream, err := bucket.DownloadToStreamByName(filename, &buf)
 	tools.CheckError(err)
 
