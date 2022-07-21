@@ -37,8 +37,6 @@ func main() {
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file", routes.DownloadFile)
 	}
-	println("====>")
-	println(os.Getenv("PORT"))
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "1323"

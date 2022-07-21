@@ -5,11 +5,9 @@ import (
 	"backend/tools"
 	"bytes"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
+	"io/ioutil"
 )
 
 func DownloadFile(c echo.Context) error {
@@ -21,12 +19,12 @@ func DownloadFile(c echo.Context) error {
 		db,
 	)
 	var buf bytes.Buffer
-	filename := "20220715051349download.jpeg"
+	filename := "20220720190345OBRIGADO ÁTILA.jpg"
 	dStream, err := bucket.DownloadToStreamByName(filename, &buf)
 	tools.CheckError(err)
 
 	fmt.Printf("File size to download: %v \n", dStream)
 	ioutil.WriteFile(filename, buf.Bytes(), 0600)
 
-	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("File %s downloaded successfully ", filename)})
+	return c.File(filename)
 }
