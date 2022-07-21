@@ -3,6 +3,7 @@ package routes
 import (
 	"backend/configs"
 	"backend/tools"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -11,7 +12,7 @@ import (
 	"strconv"
 )
 
-func CalculateRisk(c echo.Context) float64 {
+func CalculateRisk(c echo.Context) error {
 	riskLevel := 0.0
 	name := c.FormValue("name")
 
@@ -61,5 +62,5 @@ func CalculateRisk(c echo.Context) float64 {
 	*/
 
 	fmt.Print(c, name, err)
-	return riskLevel
+	return c.JSON(http.StatusOK, riskLevel)
 }
