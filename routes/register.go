@@ -6,6 +6,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+
+	"fmt"
 )
 
 func Register(c echo.Context) (err error) {
@@ -44,5 +47,19 @@ func Register(c echo.Context) (err error) {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Erro na criação do JWT.")
 	}
+
+	// Registrar no neo4j
+	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
+	if err != nil {
+		panic(err)
+	}
+	defer driver.Close()
+
+	session := driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer session.Close()
+
+	signupNeo4j, err := session.Run("CREATE (u:User{nome:$name,cpf:$cpf})", map[string]interface{}{"cpf": cred.Cpf, "name": cred.Name})
+	fmt.Print(signupNeo4j)
+
 	return c.JSON(http.StatusOK, map[string]string{"token": token, "nome": cred.Name})
 }

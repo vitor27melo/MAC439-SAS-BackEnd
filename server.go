@@ -41,6 +41,7 @@ func main() {
 		userGroup.GET("/download-file/:name", routes.DownloadFile)
 		userGroup.GET("/risk", routes.CalculateRisk)
 		userGroup.POST("/report-covid", routes.ReportCovid)
+		userGroup.POST("/register-presence", routes.RegisterPresence)
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
