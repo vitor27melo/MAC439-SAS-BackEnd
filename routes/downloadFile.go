@@ -25,6 +25,8 @@ func DownloadFile(c echo.Context) error {
 		db,
 	)
 	var buf bytes.Buffer
+	fmt.Printf(filename)
+	fmt.Printf(" banana ")
 	dStream, err := bucket.DownloadToStreamByName(filename, &buf)
 	tools.CheckError(err)
 

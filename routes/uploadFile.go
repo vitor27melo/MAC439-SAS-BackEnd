@@ -40,7 +40,7 @@ func UploadFile(c echo.Context) error {
 	filename := file.Filename
 	fileContent, err := file.Open()
 	t := time.Now().Format("20060102150405")
-	attachmentName := t + filename
+	attachmentName := t + "-filebegin-" + filename
 	tools.CheckError(err)
 
 	fileData, err := ioutil.ReadAll(fileContent)
@@ -84,7 +84,7 @@ func UploadFile(c echo.Context) error {
 
 func prepareDoc(attachmentName string, fileType string, attachmentType string, cpf string, date string, obs string) bson.D {
 	attachment := bson.D{{"tipo", fileType}, {"conteudo", attachmentName}}
-	exam := bson.D{{"obs", obs}, {"anexo", attachment}}
-	doc := bson.D{{"cpf", cpf}, {"exame", exam}}
+	exam := bson.D{{"obs", obs}, {"natureza", attachmentType}, {"anexo", attachment}}
+	doc := bson.D{{"cpf", cpf}, {"data", date}, {"documento", exam}}
 	return doc
 }
