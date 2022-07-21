@@ -34,32 +34,36 @@ func UploadFile(c echo.Context) error {
 	attachment.AttachmentType = c.FormValue("attachmentType")
 	attachment.Date = c.FormValue("date")
 	attachment.Observation = c.FormValue("obs")
-	file, err := c.FormFile("file")
 
-	tools.CheckError(err)
-	filename := file.Filename
-	fileContent, err := file.Open()
-	t := time.Now().Format("20060102150405")
-	attachmentName := t + "-filebegin-" + filename
-	tools.CheckError(err)
-
-	fileData, err := ioutil.ReadAll(fileContent)
-	tools.CheckError(err)
-	fileType := mimetype.Detect(fileData).String()
-
+	fileType := ""
+	attachmentName := ""
 	client, ctx := configs.GetMongoClient()
 	defer client.Disconnect(ctx)
 
-	bucket, err := gridfs.NewBucket(client.Database("test"))
-	tools.CheckError(err)
+	file, err := c.FormFile("file")
+	if file != nil {
+		tools.CheckError(err)
+		filename := file.Filename
+		fileContent, err := file.Open()
+		t := time.Now().Format("20060102150405")
+		attachmentName = t + "-filebegin-" + filename
+		tools.CheckError(err)
 
-	uploadStream, err := bucket.OpenUploadStream(attachmentName)
-	tools.CheckError(err)
-	defer uploadStream.Close()
+		fileData, err := ioutil.ReadAll(fileContent)
+		tools.CheckError(err)
+		fileType = mimetype.Detect(fileData).String()
 
-	fileSize, _ := uploadStream.Write(fileData)
-	if fileSize == 0 {
-		return c.JSON(http.StatusUnsupportedMediaType, map[string]string{"message": "Invalid file size error"})
+		bucket, err := gridfs.NewBucket(client.Database("test"))
+		tools.CheckError(err)
+
+		uploadStream, err := bucket.OpenUploadStream(attachmentName)
+		tools.CheckError(err)
+		defer uploadStream.Close()
+
+		fileSize, _ := uploadStream.Write(fileData)
+		if fileSize == 0 {
+			return c.JSON(http.StatusUnsupportedMediaType, map[string]string{"message": "Invalid file size error"})
+		}
 	}
 
 	db, err := sql.Open(configs.GetDBType(), configs.GetPostgresConnString())
@@ -78,7 +82,7 @@ func UploadFile(c echo.Context) error {
 	tools.CheckError(err)
 	fmt.Println(result)
 
-	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("File %s uploaded successfully ", file.Filename)})
+	return c.JSON(http.StatusOK, map[string]string{"message": fmt.Sprintf("Document registered successfully!")})
 
 }
 

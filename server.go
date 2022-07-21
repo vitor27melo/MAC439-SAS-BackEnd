@@ -34,6 +34,7 @@ func main() {
 		userGroup.GET("/courses", routes.GetCourses)
 		userGroup.GET("/days", routes.GetDays)
 		userGroup.GET("/list", routes.GetUsers)
+		userGroup.GET("/course-schedule", routes.GetTimeSchedule)
 		userGroup.GET("/files-list", routes.GetUserFiles)
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file/:name", routes.DownloadFile)
