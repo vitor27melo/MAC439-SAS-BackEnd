@@ -4,10 +4,11 @@ import (
 	"backend/configs"
 	"backend/middlewares"
 	"backend/routes"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var config = middleware.JWTConfig{
@@ -39,6 +40,7 @@ func main() {
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file/:name", routes.DownloadFile)
 		userGroup.GET("/risk", routes.CalculateRisk)
+		userGroup.POST("/report-covid", routes.ReportCovid)
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
