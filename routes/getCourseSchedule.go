@@ -16,6 +16,7 @@ func GetTimeSchedule(c echo.Context) error {
 		select
 		    id_disciplina,
 			sigla,
+			dia_semana,
 			d.nome,
 			inicio,
 		    fim
@@ -45,7 +46,7 @@ func GetTimeSchedule(c echo.Context) error {
 	for rows.Next() {
 		var course model.Oferecimento
 
-		if err := rows.Scan(&course.Id_disciplina, &course.Sigla, &course.Nome, &course.Inicio, &course.Fim); err != nil {
+		if err := rows.Scan(&course.Id_disciplina, &course.Sigla, &course.DiaSemana, &course.Nome, &course.Inicio, &course.Fim); err != nil {
 			log.Fatal(err)
 		}
 		courses = append(courses, course)
