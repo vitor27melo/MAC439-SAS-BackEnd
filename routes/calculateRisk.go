@@ -9,12 +9,11 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 
 	"fmt"
-	"strconv"
 )
 
 func CalculateRisk(c echo.Context) error {
-	riskLevel := 0.0
-	name := c.FormValue("name")
+	riskLevel := 0
+	name := c.FormValue("nome")
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
@@ -25,16 +24,14 @@ func CalculateRisk(c echo.Context) error {
 	session := driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 
-	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{}))
+	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{"name": name}))
 	tools.CheckError(err)
 
 	for _, p := range directProbs {
-		if prob, found := p.Get("confiança"); found {
-			n, err := strconv.ParseFloat(prob.(string), 64)
-			tools.CheckError(err)
-			if n-1 > riskLevel {
-				riskLevel = n - 1
-			}
+		n := p.Values[0].(int64)
+		fmt.Print(n)
+		if int(n)-1 > riskLevel {
+			riskLevel = int(n) - 1
 		}
 
 	}
@@ -60,7 +57,5 @@ func CalculateRisk(c echo.Context) error {
 		})
 
 	*/
-
-	fmt.Print(c, name, err)
 	return c.JSON(http.StatusOK, riskLevel)
 }
