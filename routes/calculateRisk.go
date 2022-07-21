@@ -29,6 +29,18 @@ func CalculateRisk(c echo.Context) error {
 
 	for _, p := range directProbs {
 		n := p.Values[0].(int64)
+		//fmt.Print(n)
+		if int(n)-1 > riskLevel {
+			riskLevel = int(n) - 1
+		}
+
+	}
+
+	indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]-(e2:Evento)-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{"name": name}))
+	tools.CheckError(err)
+
+	for _, p := range indirectProbs {
+		n := p.Values[0].(int64)
 		fmt.Print(n)
 		if int(n)-1 > riskLevel {
 			riskLevel = int(n) - 1
@@ -36,26 +48,5 @@ func CalculateRisk(c echo.Context) error {
 
 	}
 
-	//indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]<-(e2:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", nil))
-	//tools.CheckError(err)
-
-	/*
-
-		dp, ip, err := session.ReadTransaction(func(transaction neo4j.Transaction) (interface{}, interface{}, error) {
-
-			directProb, err := transaction.Run(
-				"MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities",
-				map[string]interface{}{})
-			tools.CheckError(err)
-
-			indirectProb, err := transaction.Run(
-				"MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]<-(e2:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities",
-				map[string]interface{}{})
-			tools.CheckError(err)
-
-			return directProb,indirectProb
-		})
-
-	*/
 	return c.JSON(http.StatusOK, riskLevel)
 }
