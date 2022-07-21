@@ -11,9 +11,11 @@ import (
 	"fmt"
 )
 
-func ReportCovid(c echo.Context) error {
+func RegisterPresence(c echo.Context) error {
 	name := c.FormValue("cpf")
 	date := c.FormValue("data")
+	sigla := c.FormValue("sigla")
+	fmt.Printf(sigla)
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {

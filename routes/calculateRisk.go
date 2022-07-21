@@ -13,7 +13,7 @@ import (
 
 func CalculateRisk(c echo.Context) error {
 	riskLevel := 0
-	name := c.FormValue("nome")
+	name := c.FormValue("cpf")
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
@@ -24,7 +24,7 @@ func CalculateRisk(c echo.Context) error {
 	session := driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 
-	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{"name": name}))
+	directProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)<-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.cpf = $cpf RETURN p.confiança AS probabilities", map[string]interface{}{"cpf": name}))
 	tools.CheckError(err)
 
 	for _, p := range directProbs {
@@ -36,7 +36,7 @@ func CalculateRisk(c echo.Context) error {
 
 	}
 
-	indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]-(e2:Evento)-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $name RETURN p.confiança AS probabilities", map[string]interface{}{"name": name}))
+	indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]-(e2:Evento)-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $cpf RETURN p.confiança AS probabilities", map[string]interface{}{"$cpf": name}))
 	tools.CheckError(err)
 
 	for _, p := range indirectProbs {
