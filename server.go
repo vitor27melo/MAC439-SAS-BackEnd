@@ -36,6 +36,7 @@ func main() {
 		userGroup.GET("/list", routes.GetUsers)
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file", routes.DownloadFile)
+		userGroup.GET("/risk", routes.CalculateRisk)
 	}
 	port := os.Getenv("PORT")
 	if port == "" {

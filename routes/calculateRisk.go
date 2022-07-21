@@ -3,6 +3,7 @@ package routes
 import (
 	"backend/configs"
 	"backend/tools"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -11,8 +12,9 @@ import (
 	"strconv"
 )
 
-func CalculateRisk(c echo.Context, name string) float64 {
+func CalculateRisk(c echo.Context) error {
 	riskLevel := 0.0
+	name := c.FormValue("name")
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {
@@ -60,5 +62,5 @@ func CalculateRisk(c echo.Context, name string) float64 {
 	*/
 
 	fmt.Print(c, name, err)
-	return riskLevel
+	return c.JSON(http.StatusOK, riskLevel)
 }
