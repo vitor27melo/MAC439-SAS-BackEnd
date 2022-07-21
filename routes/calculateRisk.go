@@ -43,7 +43,7 @@ func CalculateRisk(c echo.Context) error {
 		n := p.Values[0].(int64)
 		fmt.Print(n)
 		if int(n)-1 > riskLevel {
-			riskLevel = int(n) - 1
+			riskLevel = int(n) - 2
 		}
 
 	}
