@@ -4,6 +4,7 @@ import (
 	"backend/configs"
 	"backend/tools"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -13,7 +14,9 @@ import (
 
 func CalculateRisk(c echo.Context) error {
 	riskLevel := 0
-	name := c.FormValue("cpf")
+	url := c.Request().RequestURI
+	url_list := strings.Split(url, "/")
+	name := url_list[len(url_list)-1]
 
 	driver, err := neo4j.NewDriver(configs.Neo4JURI, neo4j.BasicAuth(configs.Neo4JUsername, configs.Neo4JPassword, ""))
 	if err != nil {

@@ -39,7 +39,7 @@ func main() {
 		userGroup.GET("/files-list", routes.GetUserFiles)
 		userGroup.POST("/upload-file", routes.UploadFile)
 		userGroup.GET("/download-file/:name", routes.DownloadFile)
-		userGroup.GET("/risk", routes.CalculateRisk)
+		userGroup.GET("/risk/:name", routes.CalculateRisk)
 		userGroup.POST("/report-covid", routes.ReportCovid)
 		userGroup.POST("/register-presence", routes.RegisterPresence)
 	}
