@@ -39,7 +39,7 @@ func CalculateRisk(c echo.Context) error {
 
 	}
 
-	indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]-(e2:Evento)-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.nome = $cpf RETURN p.confianca AS probabilities", map[string]interface{}{"$cpf": name}))
+	indirectProbs, err := neo4j.Collect(session.Run("MATCH (self:User)-[:PARTICIPOU]->(e1:Evento)-[:ACONTECEU]->(d:Dia)<-[:ACONTECEU]-(e2:Evento)-[:PARTICIPOU]-(other:User)-[:SUSPEITA]->(p:ProbCovid) WHERE self.cpf = $cpf RETURN p.confianca AS probabilities", map[string]interface{}{"$cpf": name}))
 	tools.CheckError(err)
 
 	for _, p := range indirectProbs {
